@@ -358,20 +358,42 @@
   </div>
 </div>
 
-<div id="quote-banner" style="
-  max-width:1100px;
-  margin: 0 auto 36px;
-  background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 100%);
-  border: 1px solid #1e3a5f;
-  border-radius: 16px;
-  padding: 28px 36px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-">
-  <div style="position:absolute;top:-20px;left:-20px;font-size:8rem;color:#ffffff06;font-family:Georgia,serif;line-height:1;">"</div>
-  <div id="quote-text" style="font-size:1.25rem;font-weight:600;color:#fff;line-height:1.6;position:relative;z-index:1;"></div>
-  <div id="quote-author" style="margin-top:10px;font-size:0.8rem;color:#4d9fff;letter-spacing:1px;text-transform:uppercase;"></div>
+<div style="max-width:1100px; margin: 0 auto 36px; display:grid; grid-template-columns: 1fr auto; gap:16px; align-items:stretch;">
+
+  <!-- Mark Douglas daily quote -->
+  <div id="quote-banner" style="
+    background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 100%);
+    border: 1px solid #1e3a5f;
+    border-radius: 16px;
+    padding: 28px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  ">
+    <div style="position:absolute;top:-20px;left:-20px;font-size:8rem;color:#ffffff06;font-family:Georgia,serif;line-height:1;">"</div>
+    <div id="quote-text" style="font-size:1.15rem;font-weight:600;color:#fff;line-height:1.6;position:relative;z-index:1;"></div>
+    <div id="quote-author" style="margin-top:10px;font-size:0.8rem;color:#4d9fff;letter-spacing:1px;text-transform:uppercase;"></div>
+  </div>
+
+  <!-- ZeroDayJay fixed quote -->
+  <div style="
+    background: linear-gradient(135deg, #1a0a2e 0%, #2d0f4e 100%);
+    border: 1px solid #5a2d8f;
+    border-radius: 16px;
+    padding: 28px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 220px;
+    position: relative;
+    overflow: hidden;
+  ">
+    <div style="font-size:2.8rem;font-weight:900;color:#c084fc;line-height:1.1;margin-bottom:12px;">How hard<br>can it be???</div>
+    <div style="font-size:0.75rem;color:#9d4edd;letter-spacing:1px;text-transform:uppercase;">— ZeroDayJay</div>
+  </div>
+
 </div>
 
 <div class="accounts" id="accounts-container"></div>
