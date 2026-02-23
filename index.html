@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex 25K Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0e1a;
+      color: #e0e6f0;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      color: #6b7fa3;
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .summary {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+
+    .summary-card {
+      background: #111827;
+      border: 1px solid #1e2d45;
+      border-radius: 12px;
+      padding: 16px 28px;
+      text-align: center;
+      min-width: 160px;
+    }
+
+    .summary-card .label {
+      font-size: 0.75rem;
+      color: #6b7fa3;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .summary-card .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00d68f;
+    }
+
+    .summary-card .value.red { color: #ff4d6a; }
+    .summary-card .value.white { color: #fff; }
+
+    .accounts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .account-card {
+      background: #111827;
+      border: 1px solid #1e2d45;
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+    }
+
+    .account-card.ready {
+      border-color: #00d68f55;
+      box-shadow: 0 0 24px #00d68f18;
+    }
+
+    .account-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .account-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .payout-badge {
+      background: #00d68f22;
+      color: #00d68f;
+      border: 1px solid #00d68f44;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      display: none;
+    }
+
+    .payout-badge.show { display: inline-block; }
+
+    .balance-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .balance {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .pnl-today {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .pnl-today.pos { color: #00d68f; }
+    .pnl-today.neg { color: #ff4d6a; }
+    .pnl-today.zero { color: #6b7fa3; }
+
+    .progress-section {
+      margin: 16px 0;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #6b7fa3;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      background: #1e2d45;
+      border-radius: 6px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #0066ff, #00d68f);
+      transition: width 0.4s ease;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .stat-box {
+      flex: 1;
+      background: #0d1424;
+      border: 1px solid #1e2d45;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-box .stat-label {
+      font-size: 0.68rem;
+      color: #6b7fa3;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
+    }
+
+    .stat-box .stat-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stat-box .stat-value.green { color: #00d68f; }
+    .stat-box .stat-value.yellow { color: #f5c542; }
+    .stat-box .stat-value.red { color: #ff4d6a; }
+
+    .log-section {
+      margin-top: 16px;
+    }
+
+    .log-title {
+      font-size: 0.75rem;
+      color: #6b7fa3;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .log-entries {
+      max-height: 160px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    .log-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #1a2540;
+      font-size: 0.82rem;
+    }
+
+    .log-entry:last-child { border-bottom: none; }
+
+    .log-entry .date { color: #6b7fa3; }
+    .log-entry .amount { font-weight: 600; }
+    .log-entry .amount.pos { color: #00d68f; }
+    .log-entry .amount.neg { color: #ff4d6a; }
+
+    .log-entry .delete-btn {
+      background: none;
+      border: none;
+      color: #ff4d6a44;
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+
+    .log-entry .delete-btn:hover { color: #ff4d6a; }
+
+    .log-empty {
+      color: #3a4f6b;
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 12px 0;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pnl-input {
+      flex: 1;
+      background: #0d1424;
+      border: 1px solid #1e2d45;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.9rem;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .pnl-input:focus { border-color: #0066ff; }
+    .pnl-input::placeholder { color: #3a4f6b; }
+
+    .log-btn {
+      background: #0066ff;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 9px 16px;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .log-btn:hover { background: #0052cc; }
+
+    .reset-btn {
+      background: none;
+      border: 1px solid #1e2d45;
+      border-radius: 8px;
+      color: #6b7fa3;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
+
+    .reset-btn:hover { border-color: #ff4d6a44; color: #ff4d6a; }
+
+    .rules-section {
+      max-width: 700px;
+      margin: 40px auto 0;
+      background: #111827;
+      border: 1px solid #1e2d45;
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .rules-section h3 {
+      font-size: 0.85rem;
+      color: #6b7fa3;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 16px;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .rule-item {
+      background: #0d1424;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+    }
+
+    .rule-item .rule-label { color: #6b7fa3; font-size: 0.72rem; margin-bottom: 2px; }
+    .rule-item .rule-value { color: #e0e6f0; font-weight: 600; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1e2d45; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ Apex 25K Tracker</h1>
+  <p>3 MNQ · $200/day target · 8 days to payout</p>
+</header>
+
+<div class="summary">
+  <div class="summary-card">
+    <div class="label">Total Profit</div>
+    <div class="value" id="total-profit">$0</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">Ready to Pay Out</div>
+    <div class="value white" id="ready-count">0 / 3</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">Payout Available</div>
+    <div class="value" id="payout-available">$0</div>
+  </div>
+</div>
+
+<div class="accounts" id="accounts-container"></div>
+
+<div class="rules-section">
+  <h3>25K Account Rules · 3 MNQ</h3>
+  <div class="rules-grid">
+    <div class="rule-item">
+      <div class="rule-label">Profit Target</div>
+      <div class="rule-value">$1,500</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Trailing Threshold</div>
+      <div class="rule-value">$1,500</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Safety Net</div>
+      <div class="rule-value">$26,600 balance</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Daily Profit Limit</div>
+      <div class="rule-value">$450 max/day</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Max Open Loss</div>
+      <div class="rule-value">-$450 at any time</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Min Profitable Days</div>
+      <div class="rule-value">5 days ($50+ each)</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Min Calendar Days</div>
+      <div class="rule-value">8 days in PA</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Contracts</div>
+      <div class="rule-value">2 pre / 4 post safety net</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">3 MNQ = $/point</div>
+      <div class="rule-value">$6 per NQ point</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Points for $200</div>
+      <div class="rule-value">~33 NQ points</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">Min Payout</div>
+      <div class="rule-value">$500</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-label">PA Monthly Fee</div>
+      <div class="rule-value">$85/month</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STARTING_BALANCE = 25000;
+  const SAFETY_NET = 26600;
+  const TRAILING_THRESHOLD = 1500;
+  const PROFIT_TARGET = 1500;
+  const DAILY_MAX = 450;
+  const MIN_GREEN_DAYS = 5;
+  const MIN_GREEN_DAY_AMOUNT = 50;
+  const MIN_CALENDAR_DAYS = 8;
+  const MIN_PAYOUT = 500;
+
+  function loadData() {
+    try {
+      return JSON.parse(localStorage.getItem('apex-tracker-v1')) || initData();
+    } catch { return initData(); }
+  }
+
+  function initData() {
+    return {
+      accounts: [
+        { name: 'Account 1', entries: [], startDate: null },
+        { name: 'Account 2', entries: [], startDate: null },
+        { name: 'Account 3', entries: [], startDate: null },
+      ]
+    };
+  }
+
+  function saveData(data) {
+    localStorage.setItem('apex-tracker-v1', JSON.stringify(data));
+  }
+
+  function formatCurrency(val) {
+    const abs = Math.abs(val);
+    const str = '$' + abs.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    return val < 0 ? '-' + str : str;
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function getTodayISO() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function getAccountStats(account) {
+    const entries = account.entries || [];
+    const totalPnl = entries.reduce((s, e) => s + e.amount, 0);
+    const balance = STARTING_BALANCE + totalPnl;
+    const greenDays = entries.filter(e => e.amount >= MIN_GREEN_DAY_AMOUNT).length;
+    const calendarDays = account.startDate
+      ? Math.floor((Date.now() - new Date(account.startDate)) / 86400000) + 1
+      : 0;
+    const safetyNetReached = balance >= SAFETY_NET;
+    const payoutReady = safetyNetReached && greenDays >= MIN_GREEN_DAYS && calendarDays >= MIN_CALENDAR_DAYS;
+    const todayEntry = entries.find(e => e.date === getTodayISO());
+    const todayPnl = todayEntry ? todayEntry.amount : null;
+    const progressPct = Math.min(100, Math.max(0, (totalPnl / PROFIT_TARGET) * 100));
+    return { totalPnl, balance, greenDays, calendarDays, safetyNetReached, payoutReady, todayPnl, progressPct, entries };
+  }
+
+  function renderAccount(account, index, data) {
+    const s = getAccountStats(account);
+    const card = document.createElement('div');
+    card.className = 'account-card' + (s.payoutReady ? ' ready' : '');
+
+    const greenDayClass = s.greenDays >= MIN_GREEN_DAYS ? 'green' : s.greenDays >= 3 ? 'yellow' : 'white';
+    const calDayClass = s.calendarDays >= MIN_CALENDAR_DAYS ? 'green' : s.calendarDays >= 5 ? 'yellow' : 'white';
+    const balanceColor = s.balance >= SAFETY_NET ? '#00d68f' : '#fff';
+    const todayClass = s.todayPnl === null ? 'zero' : s.todayPnl >= 0 ? 'pos' : 'neg';
+    const todayText = s.todayPnl === null ? 'No entry today' : (s.todayPnl >= 0 ? '+' : '') + formatCurrency(s.todayPnl) + ' today';
+
+    const entriesHtml = s.entries.length === 0
+      ? '<div class="log-empty">No entries yet — log your first day!</div>'
+      : [...s.entries].reverse().map(e => `
+          <div class="log-entry">
+            <span class="date">${formatDate(e.date)}</span>
+            <span class="amount ${e.amount >= 0 ? 'pos' : 'neg'}">${e.amount >= 0 ? '+' : ''}${formatCurrency(e.amount)}</span>
+            <button class="delete-btn" onclick="deleteEntry(${index}, '${e.date}')">✕</button>
+          </div>`).join('');
+
+    card.innerHTML = `
+      <div class="account-header">
+        <span class="account-name">${account.name}</span>
+        <span class="payout-badge ${s.payoutReady ? 'show' : ''}">✓ PAYOUT READY</span>
+      </div>
+
+      <div class="balance-row">
+        <span class="balance" style="color:${balanceColor}">$${s.balance.toLocaleString()}</span>
+        <span class="pnl-today ${todayClass}">${todayText}</span>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>Safety Net Progress</span>
+          <span>${formatCurrency(s.totalPnl)} / $1,500</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${s.progressPct}%"></div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-label">Green Days</div>
+          <div class="stat-value ${greenDayClass}">${s.greenDays} <span style="font-size:0.7rem;color:#6b7fa3">/ ${MIN_GREEN_DAYS}</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Calendar Days</div>
+          <div class="stat-value ${calDayClass}">${s.calendarDays} <span style="font-size:0.7rem;color:#6b7fa3">/ ${MIN_CALENDAR_DAYS}</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total P&L</div>
+          <div class="stat-value ${s.totalPnl >= 0 ? 'green' : 'red'}">${s.totalPnl >= 0 ? '+' : ''}${formatCurrency(s.totalPnl)}</div>
+        </div>
+      </div>
+
+      <div class="log-section">
+        <div class="log-title">Daily Log</div>
+        <div class="log-entries">${entriesHtml}</div>
+        <div class="input-row">
+          <input class="pnl-input" type="number" id="input-${index}" placeholder="+200 or -150" step="1" />
+          <button class="log-btn" onclick="logEntry(${index})">Log Day</button>
+        </div>
+        <button class="reset-btn" onclick="resetAccount(${index})">Reset Account</button>
+      </div>
+    `;
+
+    return card;
+  }
+
+  function render() {
+    const data = loadData();
+    const container = document.getElementById('accounts-container');
+    container.innerHTML = '';
+
+    let totalPnl = 0;
+    let readyCount = 0;
+
+    data.accounts.forEach((account, i) => {
+      const s = getAccountStats(account);
+      totalPnl += s.totalPnl;
+      if (s.payoutReady) readyCount++;
+      container.appendChild(renderAccount(account, i, data));
+    });
+
+    document.getElementById('total-profit').textContent = (totalPnl >= 0 ? '+' : '') + formatCurrency(totalPnl);
+    document.getElementById('total-profit').style.color = totalPnl >= 0 ? '#00d68f' : '#ff4d6a';
+    document.getElementById('ready-count').textContent = readyCount + ' / 3';
+    document.getElementById('payout-available').textContent = formatCurrency(readyCount * MIN_PAYOUT);
+    document.getElementById('payout-available').style.color = readyCount > 0 ? '#00d68f' : '#6b7fa3';
+  }
+
+  window.logEntry = function(index) {
+    const input = document.getElementById('input-' + index);
+    const val = parseFloat(input.value);
+    if (isNaN(val)) { input.focus(); return; }
+
+    const data = loadData();
+    const account = data.accounts[index];
+    const today = getTodayISO();
+
+    // Set start date on first entry
+    if (!account.startDate) account.startDate = today;
+
+    // Replace if same day
+    const existing = account.entries.findIndex(e => e.date === today);
+    if (existing >= 0) {
+      account.entries[existing].amount = val;
+    } else {
+      account.entries.push({ date: today, amount: val });
+    }
+
+    account.entries.sort((a, b) => a.date.localeCompare(b.date));
+    saveData(data);
+    input.value = '';
+    render();
+  };
+
+  window.deleteEntry = function(index, date) {
+    const data = loadData();
+    data.accounts[index].entries = data.accounts[index].entries.filter(e => e.date !== date);
+    if (data.accounts[index].entries.length === 0) data.accounts[index].startDate = null;
+    saveData(data);
+    render();
+  };
+
+  window.resetAccount = function(index) {
+    if (!confirm('Reset this account? All entries will be deleted.')) return;
+    const data = loadData();
+    data.accounts[index].entries = [];
+    data.accounts[index].startDate = null;
+    saveData(data);
+    render();
+  };
+
+  render();
+</script>
+</body>
+</html>
