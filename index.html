@@ -299,37 +299,37 @@
     .reset-btn:hover { border-color: #ff4d6a44; color: #ff4d6a; }
 
     .rules-section {
-      max-width: 700px;
+      max-width: 1100px;
       margin: 40px auto 0;
       background: #111827;
       border: 1px solid #1e2d45;
       border-radius: 16px;
-      padding: 24px;
+      padding: 28px 32px;
     }
 
     .rules-section h3 {
-      font-size: 0.85rem;
-      color: #6b7fa3;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 16px;
+      font-size: 1rem;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
     }
 
     .rules-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
     }
 
     .rule-item {
       background: #0d1424;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 0.82rem;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 0.9rem;
     }
 
-    .rule-item .rule-label { color: #6b7fa3; font-size: 0.72rem; margin-bottom: 2px; }
-    .rule-item .rule-value { color: #e0e6f0; font-weight: 600; }
+    .rule-item .rule-label { color: #6b7fa3; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .rule-item .rule-value { color: #e0e6f0; font-weight: 700; font-size: 1rem; }
 
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -360,28 +360,28 @@
 
 <div class="accounts" id="accounts-container"></div>
 
-<div class="rules-section" style="margin-bottom:20px;">
+<div class="rules-section" style="margin-bottom:20px; border-color:#1e3a5f;">
   <h3>📋 Rules to Follow</h3>
-  <div class="rules-grid">
-    <div class="rule-item" style="border-left:3px solid #0066ff;">
+  <div class="rules-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+    <div class="rule-item" style="border-left:4px solid #0066ff; background:#0a1628;">
       <div class="rule-label">Daily Target</div>
-      <div class="rule-value">Hit $200 and stop</div>
+      <div class="rule-value" style="color:#4d9fff; font-size:1.1rem;">Hit $200 and stop</div>
     </div>
-    <div class="rule-item" style="border-left:3px solid #ff4d6a;">
+    <div class="rule-item" style="border-left:4px solid #ff4d6a; background:#1a0d12;">
       <div class="rule-label">Loss Limit</div>
-      <div class="rule-value">Stop after 2 losses in a row</div>
+      <div class="rule-value" style="color:#ff6b80; font-size:1.1rem;">Stop after 2 losses in a row</div>
     </div>
-    <div class="rule-item" style="border-left:3px solid #f5c542;">
+    <div class="rule-item" style="border-left:4px solid #f5c542; background:#1a1608;">
       <div class="rule-label">Patience</div>
-      <div class="rule-value">Wait for the right trade</div>
+      <div class="rule-value" style="color:#f5c542; font-size:1.1rem;">Wait for the right trade</div>
     </div>
-    <div class="rule-item" style="border-left:3px solid #f5c542;">
+    <div class="rule-item" style="border-left:4px solid #f5c542; background:#1a1608;">
       <div class="rule-label">Market Open</div>
-      <div class="rule-value">Avoid first 30 min of open</div>
+      <div class="rule-value" style="color:#f5c542; font-size:1.1rem;">Avoid first 30 min</div>
     </div>
-    <div class="rule-item" style="border-left:3px solid #00d68f; grid-column: span 2;">
+    <div class="rule-item" style="border-left:4px solid #00d68f; background:#081a12;">
       <div class="rule-label">Session</div>
-      <div class="rule-value">NY session only — no trading outside NY hours</div>
+      <div class="rule-value" style="color:#00d68f; font-size:1.1rem;">NY session only</div>
     </div>
   </div>
 </div>
