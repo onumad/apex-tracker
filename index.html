@@ -358,6 +358,22 @@
   </div>
 </div>
 
+<div id="quote-banner" style="
+  max-width:1100px;
+  margin: 0 auto 36px;
+  background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 100%);
+  border: 1px solid #1e3a5f;
+  border-radius: 16px;
+  padding: 28px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+">
+  <div style="position:absolute;top:-20px;left:-20px;font-size:8rem;color:#ffffff06;font-family:Georgia,serif;line-height:1;">"</div>
+  <div id="quote-text" style="font-size:1.25rem;font-weight:600;color:#fff;line-height:1.6;position:relative;z-index:1;"></div>
+  <div id="quote-author" style="margin-top:10px;font-size:0.8rem;color:#4d9fff;letter-spacing:1px;text-transform:uppercase;"></div>
+</div>
+
 <div class="accounts" id="accounts-container"></div>
 
 <div class="rules-section" style="margin-bottom:20px; border-color:#1e3a5f;">
@@ -630,6 +646,30 @@
   };
 
   render();
+
+  // Daily rotating quote
+  const quotes = [
+    { text: "The goal is not to make money. The goal is to trade well. If you trade well, the money will come.", author: "Trading Principle" },
+    { text: "Amateurs think about how much money they can make. Professionals think about how much they could lose.", author: "Trading Principle" },
+    { text: "The market is a device for transferring money from the impatient to the patient.", author: "Warren Buffett" },
+    { text: "It's not whether you're right or wrong, but how much you make when you're right and how much you lose when you're wrong.", author: "George Soros" },
+    { text: "Your edge isn't your strategy. It's your discipline to follow it every single day.", author: "Trading Principle" },
+    { text: "$200 a day. Every day. That's the mission. Stay boring, stay consistent.", author: "The Plan" },
+    { text: "The best trade is sometimes no trade. Patience is a position.", author: "Trading Principle" },
+    { text: "Respect the stop. Protect the account. Live to trade another day.", author: "Risk Management" },
+    { text: "Small consistent wins compound into life-changing results. Trust the process.", author: "The Process" },
+    { text: "Do the work. Execute the plan. Don't let emotions make decisions your rules already made.", author: "Discipline" },
+    { text: "Two losses in a row means the market isn't giving today. Walk away and come back tomorrow.", author: "The Rules" },
+    { text: "Every professional was once a beginner who refused to quit. Keep showing up.", author: "Mindset" },
+    { text: "You don't need a perfect trade. You need a disciplined one.", author: "Trading Principle" },
+    { text: "The first 30 minutes is for amateurs. Let the market reveal itself.", author: "NY Session Rule" },
+    { text: "Three accounts. Eight days. $1,500 in profits. One step at a time.", author: "The Mission" },
+  ];
+
+  const dayIndex = Math.floor(Date.now() / 86400000) % quotes.length;
+  const q = quotes[dayIndex];
+  document.getElementById('quote-text').textContent = '\u201C' + q.text + '\u201D';
+  document.getElementById('quote-author').textContent = '— ' + q.author;
 </script>
 </body>
 </html>
