@@ -116,6 +116,7 @@
 <header>
   <h1>⚡ Apex 25K Tracker</h1>
   <p>3 MNQ · $200/day target · 8 days to payout</p>
+  <p style="margin-top:6px;font-size:0.8rem;" id="sync-status">🔄 Connecting…</p>
 </header>
 
 <!-- Summary Stats -->
@@ -217,10 +218,9 @@
   const EMOTIONS = ['😤','😟','😐','🙂','😎'];
   const EMOTION_LABELS = ['Frustrated','Anxious','Neutral','Good','Locked In'];
 
-  function loadData() {
-    try { return JSON.parse(localStorage.getItem('apex-tracker-v2')) || initData(); }
-    catch { return initData(); }
-  }
+  const API_URL = 'http://104.236.41.155:3001';
+  const API_KEY = '526d6f7ad5c616d1d4dd8670ec631ff9';
+
   function initData() {
     return { accounts: [
       { name: 'Account 1', entries: [], startDate: null },
@@ -228,7 +228,37 @@
       { name: 'Account 3', entries: [], startDate: null },
     ]};
   }
-  function saveData(d) { localStorage.setItem('apex-tracker-v2', JSON.stringify(d)); }
+  function loadData() {
+    try { return JSON.parse(localStorage.getItem('apex-tracker-v2')) || initData(); }
+    catch { return initData(); }
+  }
+  function saveData(d) {
+    localStorage.setItem('apex-tracker-v2', JSON.stringify(d));
+    setSyncStatus('syncing');
+    fetch(`${API_URL}/data`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+      body: JSON.stringify(d)
+    }).then(r => r.ok ? setSyncStatus('ok') : setSyncStatus('error'))
+      .catch(() => setSyncStatus('error'));
+  }
+  function setSyncStatus(state) {
+    const el = document.getElementById('sync-status');
+    if (!el) return;
+    const map = { ok: ['🟢 Synced', '#00d68f'], syncing: ['🔄 Saving…', '#f5c542'], error: ['🔴 Offline — local only', '#ff4d6a'] };
+    const [text, color] = map[state] || map.error;
+    el.textContent = text; el.style.color = color;
+  }
+  async function syncFromServer() {
+    try {
+      const r = await fetch(`${API_URL}/data`, { headers: { 'x-api-key': API_KEY } });
+      if (!r.ok) throw new Error();
+      const data = await r.json();
+      localStorage.setItem('apex-tracker-v2', JSON.stringify(data));
+      setSyncStatus('ok');
+      render();
+    } catch { setSyncStatus('error'); }
+  }
 
   function loadChecklist() {
     try { return JSON.parse(localStorage.getItem('apex-checklist-v1')) || {}; }
@@ -459,6 +489,7 @@
   document.getElementById('quote-author').textContent = '— ' + q.author;
 
   render();
+  syncFromServer(); // pull latest from server on load
 </script>
 </body>
 </html>
